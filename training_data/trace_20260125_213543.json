@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T21:35:43.893938",
+  "buggy_code": "class AsyncResource:\n    async def __aenter__(self):\n        return self\n    \n    # Missing __aexit__\n\nasync def use_resource():\n    async with AsyncResource() as r:\n        return \"used\"",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport asyncio\nfrom temp_module import use_resource\n\ndef test_async_with():\n    result = asyncio.run(use_resource())\n    assert result == \"used\"",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "class AsyncResource:\n    async def __aenter__(self):\n        return self\n    \n    async def __aexit__(self, exc_type, exc_val, exc_tb):\n        pass\n\nasync def use_resource():\n    async with AsyncResource() as r:\n        return \"used\"",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_yyx70jfb\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_yyx70jfb/test_temp_module.py::test_async_with PASSED [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "class AsyncResource:\n    async def __aenter__(self):\n        return self\n    \n    async def __aexit__(self, exc_type, exc_val, exc_tb):\n        pass\n\nasync def use_resource():\n    async with AsyncResource() as r:\n        return \"used\"",
+  "success": true,
+  "iterations": 1
+}

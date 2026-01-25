@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:55:52.065373",
+  "buggy_code": "def double_value(x):\n    return x * 2  # TypeError if x is None",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import double_value\n\ndef test_number():\n    assert double_value(5) == 10\n\ndef test_none():\n    result = double_value(None)\n    assert result is None\n\ndef test_string():\n    assert double_value(\"ab\") == \"abab\"",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def double_value(x):\n    if x is None:\n        return None\n    elif isinstance(x, str):\n        return x * 2\n    else:\n        return x * 2",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_rndgae5q\nplugins: anyio-4.12.1\ncollecting ... collected 3 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_rndgae5q/test_temp_module.py::test_number PASSED [ 33%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_rndgae5q/test_temp_module.py::test_none PASSED [ 66%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_rndgae5q/test_temp_module.py::test_string PASSED [100%]\n\n============================== 3 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "def double_value(x):\n    if x is None:\n        return None\n    elif isinstance(x, str):\n        return x * 2\n    else:\n        return x * 2",
+  "success": true,
+  "iterations": 1
+}

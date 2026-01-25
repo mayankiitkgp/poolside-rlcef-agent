@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:55:24.343938",
+  "buggy_code": "import asyncio\n\nlock = asyncio.Lock()\n\nasync def task_a():\n    async with lock:\n        await asyncio.sleep(0.01)\n        async with lock:  # Deadlock - already holding lock\n            return \"done\"\n\nasync def run():\n    return await task_a()",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport asyncio\nfrom temp_module import run\n\ndef test_no_deadlock():\n    result = asyncio.run(asyncio.wait_for(run(), timeout=1))\n    assert result == \"done\"",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import asyncio\n\nlock = asyncio.Lock()\n\nasync def task_a():\n    async with lock:\n        await asyncio.sleep(0.01)\n        return \"done\"\n\nasync def run():\n    return await task_a()",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_j5nvw2mq\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_j5nvw2mq/test_temp_module.py::test_no_deadlock PASSED [100%]\n\n============================== 1 passed in 0.02s ===============================\n"
+    }
+  ],
+  "final_code": "import asyncio\n\nlock = asyncio.Lock()\n\nasync def task_a():\n    async with lock:\n        await asyncio.sleep(0.01)\n        return \"done\"\n\nasync def run():\n    return await task_a()",
+  "success": true,
+  "iterations": 1
+}

@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T21:34:59.223383",
+  "buggy_code": "import pandas as pd\n\ndef rename_columns(df, old_name, new_name):\n    df.rename(columns={old_name: new_name})  # Missing inplace=True or assignment\n    return df",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nfrom temp_module import rename_columns\n\ndef test_rename():\n    df = pd.DataFrame({'old': [1, 2, 3]})\n    result = rename_columns(df, 'old', 'new')\n    assert 'new' in result.columns\n    assert 'old' not in result.columns",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\n\ndef rename_columns(df, old_name, new_name):\n    return df.rename(columns={old_name: new_name})",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c26rfz_d\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c26rfz_d/test_temp_module.py::test_rename PASSED [100%]\n\n============================== 1 passed in 4.99s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\n\ndef rename_columns(df, old_name, new_name):\n    return df.rename(columns={old_name: new_name})",
+  "success": true,
+  "iterations": 1
+}

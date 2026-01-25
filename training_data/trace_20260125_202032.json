@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:20:32.940099",
+  "buggy_code": "def sum_list(lst):\n    return lst[0] + sum_list(lst[1:])  # Missing base case for empty list",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import sum_list\n\ndef test_normal_list():\n    assert sum_list([1, 2, 3, 4, 5]) == 15\n\ndef test_single_element():\n    assert sum_list([10]) == 10\n\ndef test_empty_list():\n    assert sum_list([]) == 0\n\ndef test_negative_numbers():\n    assert sum_list([-1, -2, 3]) == 0",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def sum_list(lst):\n    if not lst:\n        return 0\n    return lst[0] + sum_list(lst[1:])",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_uextv3wv\nplugins: anyio-4.12.1\ncollecting ... collected 4 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_uextv3wv/test_temp_module.py::test_normal_list PASSED [ 25%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_uextv3wv/test_temp_module.py::test_single_element PASSED [ 50%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_uextv3wv/test_temp_module.py::test_empty_list PASSED [ 75%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_uextv3wv/test_temp_module.py::test_negative_numbers PASSED [100%]\n\n============================== 4 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "def sum_list(lst):\n    if not lst:\n        return 0\n    return lst[0] + sum_list(lst[1:])",
+  "success": true,
+  "iterations": 1
+}

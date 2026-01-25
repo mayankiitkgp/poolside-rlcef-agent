@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-01-25T20:22:50.278705",
+  "buggy_code": "import asyncio\nimport time\n\ndef slow_sync():\n    time.sleep(1)  # Blocks the event loop\n    return \"done\"\n\nasync def main():\n    result = slow_sync()\n    return result",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport asyncio\nimport time\nfrom temp_module import main\n\ndef test_main():\n    start = time.time()\n    result = asyncio.run(main())\n    elapsed = time.time() - start\n    assert result == \"done\"\n    # Should complete quickly if properly async\n    assert elapsed < 0.5",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import asyncio\nimport time\n\ndef slow_sync():\n    time.sleep(1)  \n    return \"done\"\n\nasync def slow_async():\n    loop = asyncio.get_running_loop()\n    return await loop.run_in_executor(None, slow_sync)\n\nasync def main():\n    result = await slow_async()\n    return result",
+      "passed": false,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_eato2ded\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_eato2ded/test_temp_module.py::test_main FAILED [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_main ___________________________________\n/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_eato2ded/test_temp_module.py:13: in test_main\n    assert elapsed < 0.5\nE   assert 1.0079448223114014 < 0.5\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_eato2ded/test_temp_module.py::test_main\n============================== 1 failed in 1.04s ===============================\n"
+    },
+    {
+      "iteration": 2,
+      "code": "import asyncio\nimport time\nfrom concurrent.futures import ThreadPoolExecutor\n\ndef slow_sync():\n    time.sleep(1)  \n    return \"done\"\n\nasync def slow_async():\n    loop = asyncio.get_running_loop()\n    with ThreadPoolExecutor() as pool:\n        return await loop.run_in_executor(pool, slow_sync)\n\nasync def main():\n    result = await slow_async()\n    return result",
+      "passed": false,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c5abza41\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c5abza41/test_temp_module.py::test_main FAILED [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_main ___________________________________\n/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c5abza41/test_temp_module.py:13: in test_main\n    assert elapsed < 0.5\nE   assert 1.0032000541687012 < 0.5\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c5abza41/test_temp_module.py::test_main\n============================== 1 failed in 1.03s ===============================\n"
+    },
+    {
+      "iteration": 3,
+      "code": "import asyncio\nimport time\nfrom concurrent.futures import ThreadPoolExecutor\n\ndef slow_sync():\n    time.sleep(1)  \n    return \"done\"\n\nasync def slow_async():\n    loop = asyncio.get_running_loop()\n    with ThreadPoolExecutor(max_workers=1) as pool:\n        return await loop.run_in_executor(pool, slow_sync)\n\nasync def main():\n    result = await slow_async()\n    return result",
+      "passed": false,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_l6bod90j\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_l6bod90j/test_temp_module.py::test_main FAILED [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_main ___________________________________\n/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_l6bod90j/test_temp_module.py:13: in test_main\n    assert elapsed < 0.5\nE   assert 1.0065841674804688 < 0.5\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_l6bod90j/test_temp_module.py::test_main\n============================== 1 failed in 1.04s ===============================\n"
+    },
+    {
+      "iteration": 4,
+      "code": "import asyncio\nimport time\nfrom concurrent.futures import ThreadPoolExecutor\n\ndef slow_sync():\n    time.sleep(1)  \n    return \"done\"\n\nasync def slow_async():\n    loop = asyncio.get_running_loop()\n    with ThreadPoolExecutor(max_workers=1) as pool:\n        return await loop.run_in_executor(pool, slow_sync)\n\nasync def main():\n    loop = asyncio.get_running_loop()\n    with ThreadPoolExecutor() as pool:\n        result = await loop.run_in_executor(pool, slow_sync)\n    return result",
+      "passed": false,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_0_o2lpu5\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_0_o2lpu5/test_temp_module.py::test_main FAILED [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_main ___________________________________\n/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_0_o2lpu5/test_temp_module.py:13: in test_main\n    assert elapsed < 0.5\nE   assert 1.0069422721862793 < 0.5\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_0_o2lpu5/test_temp_module.py::test_main\n============================== 1 failed in 1.04s ===============================\n"
+    },
+    {
+      "iteration": 5,
+      "code": "import asyncio\nimport time\nfrom concurrent.futures import ThreadPoolExecutor\n\ndef slow_sync():\n    time.sleep(1)  \n    return \"done\"\n\nasync def main():\n    loop = asyncio.get_running_loop()\n    with ThreadPoolExecutor(max_workers=1) as pool:\n        result = await loop.run_in_executor(pool, slow_sync)\n    return result",
+      "passed": false,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a348w5k0\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a348w5k0/test_temp_module.py::test_main FAILED [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_main ___________________________________\n/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a348w5k0/test_temp_module.py:13: in test_main\n    assert elapsed < 0.5\nE   assert 1.0070538520812988 < 0.5\n=========================== short test summary info ============================\nFAILED ../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a348w5k0/test_temp_module.py::test_main\n============================== 1 failed in 1.04s ===============================\n"
+    }
+  ],
+  "final_code": null,
+  "success": false,
+  "iterations": 5
+}

@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:55:39.842977",
+  "buggy_code": "def get_element(arr, index):\n    return arr[index]  # Negative index wraps around",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import get_element\n\ndef test_positive():\n    assert get_element([1, 2, 3], 0) == 1\n\ndef test_negative():\n    # Negative index should raise error or return None, not wrap\n    try:\n        result = get_element([1, 2, 3], -1)\n        assert result is None, \"Should not return wrapped element\"\n    except IndexError:\n        pass\n\ndef test_out_of_range():\n    try:\n        get_element([1, 2, 3], 10)\n        assert False\n    except IndexError:\n        pass",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def get_element(arr, index):\n    if index < 0 or index >= len(arr):\n        raise IndexError(\"Index out of range\")\n    return arr[index]",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_kvhh4njn\nplugins: anyio-4.12.1\ncollecting ... collected 3 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_kvhh4njn/test_temp_module.py::test_positive PASSED [ 33%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_kvhh4njn/test_temp_module.py::test_negative PASSED [ 66%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_kvhh4njn/test_temp_module.py::test_out_of_range PASSED [100%]\n\n============================== 3 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "def get_element(arr, index):\n    if index < 0 or index >= len(arr):\n        raise IndexError(\"Index out of range\")\n    return arr[index]",
+  "success": true,
+  "iterations": 1
+}

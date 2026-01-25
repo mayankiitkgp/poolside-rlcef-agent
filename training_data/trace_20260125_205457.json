@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:54:57.684135",
+  "buggy_code": "import pandas as pd\n\ndef reset_df_index(df):\n    df.reset_index()  # Missing inplace or assignment\n    return df",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nfrom temp_module import reset_df_index\n\ndef test_reset():\n    df = pd.DataFrame({'a': [1, 2, 3]}, index=[10, 20, 30])\n    result = reset_df_index(df)\n    assert list(result.index) == [0, 1, 2]",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\n\ndef reset_df_index(df):\n    df = df.reset_index(drop=True)\n    return df",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_6nw3dmaj\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_6nw3dmaj/test_temp_module.py::test_reset PASSED [100%]\n\n============================== 1 passed in 5.09s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\n\ndef reset_df_index(df):\n    df = df.reset_index(drop=True)\n    return df",
+  "success": true,
+  "iterations": 1
+}

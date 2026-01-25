@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:54:20.528203",
+  "buggy_code": "import pandas as pd\n\ndef concat_dataframes(dfs):\n    return pd.concat(dfs, ignore_index=True)  # May cause dtype issues",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nfrom temp_module import concat_dataframes\n\ndef test_same_types():\n    df1 = pd.DataFrame({'a': [1, 2]})\n    df2 = pd.DataFrame({'a': [3, 4]})\n    result = concat_dataframes([df1, df2])\n    assert result['a'].dtype == 'int64'\n\ndef test_mixed_types():\n    df1 = pd.DataFrame({'a': [1, 2]})\n    df2 = pd.DataFrame({'a': ['3', '4']})\n    result = concat_dataframes([df1, df2])\n    # After concat, all should be same type\n    assert len(result) == 4",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\n\ndef concat_dataframes(dfs):\n    result = pd.concat(dfs, ignore_index=True)\n    for col in result.columns:\n        if result[col].dtype == 'object':\n            try:\n                result[col] = pd.to_numeric(result[col])\n            except ValueError:\n                pass\n    return result",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_zrokfn6t\nplugins: anyio-4.12.1\ncollecting ... collected 2 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_zrokfn6t/test_temp_module.py::test_same_types PASSED [ 50%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_zrokfn6t/test_temp_module.py::test_mixed_types PASSED [100%]\n\n============================== 2 passed in 4.85s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\n\ndef concat_dataframes(dfs):\n    result = pd.concat(dfs, ignore_index=True)\n    for col in result.columns:\n        if result[col].dtype == 'object':\n            try:\n                result[col] = pd.to_numeric(result[col])\n            except ValueError:\n                pass\n    return result",
+  "success": true,
+  "iterations": 1
+}

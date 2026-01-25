@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T21:35:08.308491",
+  "buggy_code": "import pandas as pd\n\ndef calculate_totals(df, group_col, value_col):\n    return df.groupby(group_col)[value_col].mean()  # Should be sum()",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nfrom temp_module import calculate_totals\n\ndef test_totals():\n    df = pd.DataFrame({\n        'category': ['A', 'A', 'B'],\n        'value': [10, 20, 15]\n    })\n    result = calculate_totals(df, 'category', 'value')\n    assert result['A'] == 30\n    assert result['B'] == 15",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\n\ndef calculate_totals(df, group_col, value_col):\n    return df.groupby(group_col)[value_col].sum()",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_z6k7krv8\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_z6k7krv8/test_temp_module.py::test_totals PASSED [100%]\n\n============================== 1 passed in 4.94s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\n\ndef calculate_totals(df, group_col, value_col):\n    return df.groupby(group_col)[value_col].sum()",
+  "success": true,
+  "iterations": 1
+}

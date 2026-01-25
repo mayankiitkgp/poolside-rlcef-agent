@@ -1,0 +1,45 @@
+{
+  "timestamp": "2026-01-25T20:53:03.974568",
+  "buggy_code": "class TreeNode:\n    def __init__(self, val=0, left=None, right=None):\n        self.val = val\n        self.left = left\n        self.right = right\n\ndef inorder_traversal(root):\n    result = []\n    result.extend(inorder_traversal(root.left))  # Missing None check\n    result.append(root.val)\n    result.extend(inorder_traversal(root.right))\n    return result",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import TreeNode, inorder_traversal\n\ndef test_single_node():\n    root = TreeNode(1)\n    assert inorder_traversal(root) == [1]\n\ndef test_left_child():\n    root = TreeNode(2, TreeNode(1))\n    assert inorder_traversal(root) == [1, 2]\n\ndef test_full_tree():\n    root = TreeNode(2, TreeNode(1), TreeNode(3))\n    assert inorder_traversal(root) == [1, 2, 3]\n\ndef test_empty_tree():\n    assert inorder_traversal(None) == []",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def inorder_traversal(root):\n    if root is None:\n        return []\n    result = []\n    result.extend(inorder_traversal(root.left))\n    result.append(root.val)\n    result.extend(inorder_traversal(root.right))\n    return result",
+      "passed": false,
+      "error": "ImportError while importing test module '/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_w_w6d296/test_temp_module.py'.",
+      "stdout": ""
+    },
+    {
+      "iteration": 2,
+      "code": "def inorder_traversal(root):\n    if root is None:\n        return []\n    result = []\n    result.extend(inorder_traversal(root.left))\n    result.append(root.val)\n    result.extend(inorder_traversal(root.right))\n    return result",
+      "passed": false,
+      "error": "ImportError while importing test module '/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a8ye20rr/test_temp_module.py'.",
+      "stdout": ""
+    },
+    {
+      "iteration": 3,
+      "code": "def inorder_traversal(root):\n    if root is None:\n        return []\n    result = []\n    if root.left is not None:\n        result.extend(inorder_traversal(root.left))\n    result.append(root.val)\n    if root.right is not None:\n        result.extend(inorder_traversal(root.right))\n    return result",
+      "passed": false,
+      "error": "ImportError while importing test module '/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_jrne0byg/test_temp_module.py'.",
+      "stdout": ""
+    },
+    {
+      "iteration": 4,
+      "code": "def inorder_traversal(root):\n    if root is None:\n        return []\n    result = []\n    if root.left is not None:\n        result.extend(inorder_traversal(root.left))\n    result.append(root.val)\n    if root.right is not None:\n        result.extend(inorder_traversal(root.right))\n    return result",
+      "passed": false,
+      "error": "ImportError while importing test module '/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_dop4go2w/test_temp_module.py'.",
+      "stdout": ""
+    },
+    {
+      "iteration": 5,
+      "code": "def inorder_traversal(root):\n    if root is None:\n        return []\n    result = []\n    if root.left is not None:\n        result.extend(inorder_traversal(root.left))\n    result.append(root.val)\n    if root.right is not None:\n        result.extend(inorder_traversal(root.right))\n    return result",
+      "passed": false,
+      "error": "ImportError while importing test module '/var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_ty8xqwkf/test_temp_module.py'.",
+      "stdout": ""
+    }
+  ],
+  "final_code": null,
+  "success": false,
+  "iterations": 5
+}

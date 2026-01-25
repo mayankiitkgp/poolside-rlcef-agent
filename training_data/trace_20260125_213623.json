@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T21:36:23.148176",
+  "buggy_code": "def countdown(n):\n    result = []\n    while n > 0:\n        result.append(n)\n        # Missing n -= 1\n    return result",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import countdown\n\ndef test_countdown():\n    result = countdown(5)\n    assert result == [5, 4, 3, 2, 1]\n\ndef test_zero():\n    result = countdown(0)\n    assert result == []\n\ndef test_one():\n    result = countdown(1)\n    assert result == [1]",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def countdown(n):\n    result = []\n    while n > 0:\n        result.append(n)\n        n -= 1\n    return result",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c63uvohz\nplugins: anyio-4.12.1\ncollecting ... collected 3 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c63uvohz/test_temp_module.py::test_countdown PASSED [ 33%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c63uvohz/test_temp_module.py::test_zero PASSED [ 66%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_c63uvohz/test_temp_module.py::test_one PASSED [100%]\n\n============================== 3 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "def countdown(n):\n    result = []\n    while n > 0:\n        result.append(n)\n        n -= 1\n    return result",
+  "success": true,
+  "iterations": 1
+}

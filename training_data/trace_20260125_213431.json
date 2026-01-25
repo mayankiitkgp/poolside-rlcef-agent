@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T21:34:31.140243",
+  "buggy_code": "import pandas as pd\n\ndef merge_dataframes(df1, df2, key):\n    return pd.merge(df1, df2, on=key)  # No validation if key exists",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nimport pytest\nfrom temp_module import merge_dataframes\n\ndef test_valid_merge():\n    df1 = pd.DataFrame({'id': [1, 2], 'a': ['x', 'y']})\n    df2 = pd.DataFrame({'id': [1, 2], 'b': ['p', 'q']})\n    result = merge_dataframes(df1, df2, 'id')\n    assert len(result) == 2\n\ndef test_missing_key():\n    df1 = pd.DataFrame({'id': [1, 2], 'a': ['x', 'y']})\n    df2 = pd.DataFrame({'other': [1, 2], 'b': ['p', 'q']})\n    try:\n        result = merge_dataframes(df1, df2, 'id')\n        assert False, \"Should raise error for missing key\"\n    except KeyError:\n        pass",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\n\ndef merge_dataframes(df1, df2, key):\n    if key not in df1.columns or key not in df2.columns:\n        raise KeyError(f\"Key '{key}' not found in one or both dataframes\")\n    return pd.merge(df1, df2, on=key)",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_7y3ykt3u\nplugins: anyio-4.12.1\ncollecting ... collected 2 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_7y3ykt3u/test_temp_module.py::test_valid_merge PASSED [ 50%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_7y3ykt3u/test_temp_module.py::test_missing_key PASSED [100%]\n\n============================== 2 passed in 4.89s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\n\ndef merge_dataframes(df1, df2, key):\n    if key not in df1.columns or key not in df2.columns:\n        raise KeyError(f\"Key '{key}' not found in one or both dataframes\")\n    return pd.merge(df1, df2, on=key)",
+  "success": true,
+  "iterations": 1
+}

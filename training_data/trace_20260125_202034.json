@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:20:34.723866",
+  "buggy_code": "def count_digits(n):\n    if n < 10:\n        return 1\n    return 1 + count_digits(n // 10)\n\n# Bug: doesn't handle 0 correctly - returns 1 but concept is ambiguous\n# Actually the real bug: negative numbers cause infinite recursion",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import count_digits\n\ndef test_single_digit():\n    assert count_digits(5) == 1\n\ndef test_two_digits():\n    assert count_digits(42) == 2\n\ndef test_large_number():\n    assert count_digits(12345) == 5\n\ndef test_zero():\n    assert count_digits(0) == 1\n\ndef test_negative():\n    assert count_digits(-123) == 3",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def count_digits(n):\n    if n == 0:\n        return 1\n    if n < 0:\n        n = -n\n    if n < 10:\n        return 1\n    return 1 + count_digits(n // 10)",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_k4hko_oo\nplugins: anyio-4.12.1\ncollecting ... collected 5 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_k4hko_oo/test_temp_module.py::test_single_digit PASSED [ 20%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_k4hko_oo/test_temp_module.py::test_two_digits PASSED [ 40%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_k4hko_oo/test_temp_module.py::test_large_number PASSED [ 60%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_k4hko_oo/test_temp_module.py::test_zero PASSED [ 80%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_k4hko_oo/test_temp_module.py::test_negative PASSED [100%]\n\n============================== 5 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "def count_digits(n):\n    if n == 0:\n        return 1\n    if n < 0:\n        n = -n\n    if n < 10:\n        return 1\n    return 1 + count_digits(n // 10)",
+  "success": true,
+  "iterations": 1
+}

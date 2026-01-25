@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:53:04.714555",
+  "buggy_code": "def power(base, exp):\n    if exp == 0:\n        return 1\n    return base * power(base, exp)  # Should be exp - 1",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import power\n\ndef test_power_2_3():\n    assert power(2, 3) == 8\n\ndef test_power_5_0():\n    assert power(5, 0) == 1\n\ndef test_power_3_2():\n    assert power(3, 2) == 9\n\ndef test_power_10_1():\n    assert power(10, 1) == 10",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def power(base, exp):\n    if exp == 0:\n        return 1\n    return base * power(base, exp - 1)",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_32fcpuu_\nplugins: anyio-4.12.1\ncollecting ... collected 4 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_32fcpuu_/test_temp_module.py::test_power_2_3 PASSED [ 25%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_32fcpuu_/test_temp_module.py::test_power_5_0 PASSED [ 50%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_32fcpuu_/test_temp_module.py::test_power_3_2 PASSED [ 75%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_32fcpuu_/test_temp_module.py::test_power_10_1 PASSED [100%]\n\n============================== 4 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "def power(base, exp):\n    if exp == 0:\n        return 1\n    return base * power(base, exp - 1)",
+  "success": true,
+  "iterations": 1
+}

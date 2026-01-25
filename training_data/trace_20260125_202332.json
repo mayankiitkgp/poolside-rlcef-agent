@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:23:32.127302",
+  "buggy_code": "def get_value(d, key):\n    return d[key]  # KeyError if missing",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nfrom temp_module import get_value\n\ndef test_exists():\n    assert get_value({'a': 1}, 'a') == 1\n\ndef test_missing():\n    result = get_value({'a': 1}, 'b')\n    assert result is None\n\ndef test_default():\n    result = get_value({}, 'any')\n    assert result is None",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "def get_value(d, key):\n    return d.get(key)",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_dxq1uwzw\nplugins: anyio-4.12.1\ncollecting ... collected 3 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_dxq1uwzw/test_temp_module.py::test_exists PASSED [ 33%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_dxq1uwzw/test_temp_module.py::test_missing PASSED [ 66%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_dxq1uwzw/test_temp_module.py::test_default PASSED [100%]\n\n============================== 3 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "def get_value(d, key):\n    return d.get(key)",
+  "success": true,
+  "iterations": 1
+}

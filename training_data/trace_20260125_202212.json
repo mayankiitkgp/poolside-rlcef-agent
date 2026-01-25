@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:22:12.626009",
+  "buggy_code": "import sqlite3\n\ndef find_by_name(db_path, table, name):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    # Bug: Missing quotes around string value\n    cursor.execute(f\"SELECT * FROM {table} WHERE name = {name}\")\n    results = cursor.fetchall()\n    conn.close()\n    return results",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport sqlite3\nimport tempfile\nimport os\nfrom temp_module import find_by_name\n\ndef test_find_name():\n    with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:\n        db_path = f.name\n    \n    conn = sqlite3.connect(db_path)\n    conn.execute('CREATE TABLE users (id INTEGER, name TEXT)')\n    conn.execute('INSERT INTO users VALUES (1, \"Alice\")')\n    conn.execute('INSERT INTO users VALUES (2, \"Bob\")')\n    conn.commit()\n    conn.close()\n    \n    try:\n        results = find_by_name(db_path, 'users', 'Alice')\n        assert len(results) == 1\n        assert results[0][1] == 'Alice'\n    finally:\n        os.unlink(db_path)",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import sqlite3\n\ndef find_by_name(db_path, table, name):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    cursor.execute(f\"SELECT * FROM {table} WHERE name = ?\", (name,))\n    results = cursor.fetchall()\n    conn.close()\n    return results",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python3.14\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_v5guxkg3\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_v5guxkg3/test_temp_module.py::test_find_name PASSED [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "import sqlite3\n\ndef find_by_name(db_path, table, name):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    cursor.execute(f\"SELECT * FROM {table} WHERE name = ?\", (name,))\n    results = cursor.fetchall()\n    conn.close()\n    return results",
+  "success": true,
+  "iterations": 1
+}

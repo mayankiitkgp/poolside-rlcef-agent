@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:54:29.743309",
+  "buggy_code": "import pandas as pd\n\ndef fill_missing(df, column, value):\n    df[column] = df[column].fillna(value)\n    return df  # No type checking",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nimport numpy as np\nfrom temp_module import fill_missing\n\ndef test_fill_numeric():\n    df = pd.DataFrame({'a': [1.0, np.nan, 3.0]})\n    result = fill_missing(df, 'a', 0)\n    assert result['a'].tolist() == [1.0, 0.0, 3.0]\n\ndef test_fill_string():\n    df = pd.DataFrame({'a': ['x', None, 'z']})\n    result = fill_missing(df, 'a', 'missing')\n    assert result['a'].tolist() == ['x', 'missing', 'z']",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\nimport numpy as np\n\ndef fill_missing(df, column, value):\n    if not isinstance(df, pd.DataFrame):\n        raise TypeError(\"Input must be a pandas DataFrame\")\n    if column not in df.columns:\n        raise ValueError(\"Column does not exist in the DataFrame\")\n    if not pd.api.types.is_numeric_dtype(df[column]) and not pd.api.types.is_string_dtype(df[column]):\n        raise ValueError(\"Column must be of numeric or string type\")\n    df[column] = df[column].fillna(value)\n    return df",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a2jbvhkb\nplugins: anyio-4.12.1\ncollecting ... collected 2 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a2jbvhkb/test_temp_module.py::test_fill_numeric PASSED [ 50%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_a2jbvhkb/test_temp_module.py::test_fill_string PASSED [100%]\n\n============================== 2 passed in 4.89s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\nimport numpy as np\n\ndef fill_missing(df, column, value):\n    if not isinstance(df, pd.DataFrame):\n        raise TypeError(\"Input must be a pandas DataFrame\")\n    if column not in df.columns:\n        raise ValueError(\"Column does not exist in the DataFrame\")\n    if not pd.api.types.is_numeric_dtype(df[column]) and not pd.api.types.is_string_dtype(df[column]):\n        raise ValueError(\"Column must be of numeric or string type\")\n    df[column] = df[column].fillna(value)\n    return df",
+  "success": true,
+  "iterations": 1
+}

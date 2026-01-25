@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:55:07.863659",
+  "buggy_code": "import pandas as pd\n\ndef add_column(df, name, values):\n    df[name] = values  # Silently overwrites if exists\n    return df",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nfrom temp_module import add_column\n\ndef test_add_new():\n    df = pd.DataFrame({'a': [1, 2]})\n    result = add_column(df, 'b', [3, 4])\n    assert 'b' in result.columns\n\ndef test_add_existing():\n    df = pd.DataFrame({'a': [1, 2]})\n    try:\n        result = add_column(df, 'a', [3, 4])\n        # Should raise error or rename, not silently overwrite\n        assert result['a'].tolist() != [3, 4], \"Should not silently overwrite\"\n    except ValueError:\n        pass",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\n\ndef add_column(df, name, values):\n    if name in df.columns:\n        raise ValueError(f\"Column '{name}' already exists in the DataFrame\")\n    df[name] = values\n    return df",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_5w93u__i\nplugins: anyio-4.12.1\ncollecting ... collected 2 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_5w93u__i/test_temp_module.py::test_add_new PASSED [ 50%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_5w93u__i/test_temp_module.py::test_add_existing PASSED [100%]\n\n============================== 2 passed in 5.96s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\n\ndef add_column(df, name, values):\n    if name in df.columns:\n        raise ValueError(f\"Column '{name}' already exists in the DataFrame\")\n    df[name] = values\n    return df",
+  "success": true,
+  "iterations": 1
+}

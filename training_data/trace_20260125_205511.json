@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:55:11.951472",
+  "buggy_code": "import sqlite3\n\ndef count_active_users(db_path):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    # Bug: Using = instead of True/1 for boolean\n    cursor.execute(\"SELECT COUNT(*) FROM users WHERE active = 'true'\")\n    result = cursor.fetchone()[0]\n    conn.close()\n    return result",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport sqlite3\nimport tempfile\nimport os\nfrom temp_module import count_active_users\n\ndef test_count():\n    with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:\n        db_path = f.name\n    \n    conn = sqlite3.connect(db_path)\n    conn.execute('CREATE TABLE users (id INTEGER, name TEXT, active INTEGER)')\n    conn.execute('INSERT INTO users VALUES (1, \"Alice\", 1)')\n    conn.execute('INSERT INTO users VALUES (2, \"Bob\", 0)')\n    conn.execute('INSERT INTO users VALUES (3, \"Charlie\", 1)')\n    conn.commit()\n    conn.close()\n    \n    try:\n        count = count_active_users(db_path)\n        assert count == 2\n    finally:\n        os.unlink(db_path)",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import sqlite3\n\ndef count_active_users(db_path):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT COUNT(*) FROM users WHERE active = 1\")\n    result = cursor.fetchone()[0]\n    conn.close()\n    return result",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_npnx754g\nplugins: anyio-4.12.1\ncollecting ... collected 1 item\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_npnx754g/test_temp_module.py::test_count PASSED [100%]\n\n============================== 1 passed in 0.01s ===============================\n"
+    }
+  ],
+  "final_code": "import sqlite3\n\ndef count_active_users(db_path):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT COUNT(*) FROM users WHERE active = 1\")\n    result = cursor.fetchone()[0]\n    conn.close()\n    return result",
+  "success": true,
+  "iterations": 1
+}

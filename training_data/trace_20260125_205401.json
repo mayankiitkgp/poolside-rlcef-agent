@@ -1,0 +1,17 @@
+{
+  "timestamp": "2026-01-25T20:54:01.533490",
+  "buggy_code": "import pandas as pd\n\ndef sum_by_category(df):\n    return df.groupby('category')['value'].sum().to_dict()  # Drops NaN categories",
+  "test_code": "import sys\nsys.path.insert(0, '.')\nimport pandas as pd\nimport numpy as np\nfrom temp_module import sum_by_category\n\ndef test_normal():\n    df = pd.DataFrame({'category': ['A', 'B', 'A'], 'value': [1, 2, 3]})\n    result = sum_by_category(df)\n    assert result == {'A': 4, 'B': 2}\n\ndef test_with_nan():\n    df = pd.DataFrame({'category': ['A', None, 'A'], 'value': [1, 2, 3]})\n    result = sum_by_category(df)\n    assert 'A' in result and result['A'] == 4\n    # NaN category should also be counted\n    assert len(result) == 2",
+  "attempts": [
+    {
+      "iteration": 1,
+      "code": "import pandas as pd\nimport numpy as np\n\ndef sum_by_category(df):\n    df = df.copy()\n    df['category'] = df['category'].fillna('NaN')\n    return df.groupby('category')['value'].sum().to_dict()",
+      "passed": true,
+      "error": "",
+      "stdout": "============================= test session starts ==============================\nplatform darwin -- Python 3.14.0, pytest-8.3.3, pluggy-1.6.0 -- /Users/mayankmahawar/Desktop/Mayank/Poolside/poolside-rlcef-agent/venv/bin/python\ncachedir: .pytest_cache\nrootdir: /var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_nd9l5ttd\nplugins: anyio-4.12.1\ncollecting ... collected 2 items\n\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_nd9l5ttd/test_temp_module.py::test_normal PASSED [ 50%]\n../../../../../../../var/folders/mw/4j_80yf921n9t5s4c6m_nwxh0000gn/T/code_sandbox_nd9l5ttd/test_temp_module.py::test_with_nan PASSED [100%]\n\n============================== 2 passed in 4.88s ===============================\n"
+    }
+  ],
+  "final_code": "import pandas as pd\nimport numpy as np\n\ndef sum_by_category(df):\n    df = df.copy()\n    df['category'] = df['category'].fillna('NaN')\n    return df.groupby('category')['value'].sum().to_dict()",
+  "success": true,
+  "iterations": 1
+}
