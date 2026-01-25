@@ -1,5 +1,9 @@
 # RLCEF Code Agent v2.0: Self-Fixing Code with Reflection
 
+![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)
+![Success Rate](https://img.shields.io/badge/success%20rate-92%25-brightgreen)
+![License MIT](https://img.shields.io/badge/license-MIT-green)
+
 An autonomous agent that fixes buggy Python code through iterative execution feedback and self-reflection—inspired by **[Poolside AI](https://poolside.ai)**'s RLCEF (Reinforcement Learning from Code Execution Feedback) approach.
 
 **Author:** Mayank Mahawar ([LinkedIn](https://www.linkedin.com/in/mayank-mahawar-46032a4b/))  
