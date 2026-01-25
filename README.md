@@ -1,122 +1,95 @@
-# Context-Aware Code Completion via Retrieval-Augmented Generation
+# RLCEF Code Agent: Self-Fixing Code via Test Execution Feedback
 
-**Empirical investigation: Can hybrid retrieval (BM25 + vector embeddings) improve code completion accuracy by 25%+ vs zero-shot LLM prompting?**
+**Inspired by [Poolside AI](https://poolside.ai)'s approach to autonomous code improvement**
 
-**Author:** Mayank Mahawar ([LinkedIn](https://www.linkedin.com/in/mayank-mahawar-46032a4b/))  
-**Timeline:** Nov 17 - Dec 7, 2025 (21 days)  
-**Inspiration:** [Poolside AI](https://poolside.ai)'s approach to private codebase intelligence
+Author: Mayank Mahawar ([LinkedIn](https://www.linkedin.com/in/mayank-mahawar-46032a4b/))  
 
 ---
 
-## Research Question
+## What This Does
 
-**Hypothesis:** Retrieval-Augmented Generation (RAG) with codebase-specific context can boost code completion accuracy to 80%+ at <$0.01/completion, outperforming zero-shot LLM prompting by 25%.
+Paste broken Python code + tests → AI fixes it automatically by:
+1. Running real tests in Docker sandbox
+2. Reading actual error logs
+3. Generating targeted fixes
+4. Repeating until all tests pass ✅
 
-**Target benchmark:** Match GPT-4's 67% on HumanEval using Qwen 2.5 Coder (32B) + retrieved context, at 10x lower cost.
-
----
-## Architecture
-
-**System Pipeline:**
-
-1. **Index Phase:** 
-   - Parse Python codebase using `ast` module (extract functions, classes, docstrings)
-   - Generate embeddings with `text-embedding-3-small` (1536D vectors, $0.02/1M tokens)
-   - Store in PostgreSQL + pgvector extension (HNSW index for fast ANN search)
-
-2. **Retrieval Phase:**
-   - User provides partial code snippet
-   - BM25 scores top-20 candidates (keyword precision for exact API matches)
-   - Cosine similarity reranks top-20 → select top-5 (semantic relevance)
-
-3. **Completion Phase:**
-   - Inject top-5 context into LLM prompt template
-   - Qwen 2.5 Coder 32B generates completion via Groq API (400 tok/sec inference)
-   - Return code + citations (which functions influenced output)
-
-**Data Flow:**
-
-Codebase → AST Parse → Embed → pgvector → [Query] → BM25 → Cosine → Top-5 → Qwen → Completion
-
-
-**Tech Highlights:**
-- Hybrid search beats pure vector (handles both "find sort function" and "find data transformation logic")
-- Groq LPU inference: 8x faster than GPU at lower cost ($0.27/1M vs AWS g5 at $1.50/hr)
-- Function-level chunking preserves context better than line-based or file-based splits
-
+**Not autocomplete, not one-shot generation** – iterative debugging via execution feedback loop.
 
 ---
 
-## Tech Stack
+## Demo Example
 
-| Component | Choice | Rationale |
-|-----------|--------|-----------|
-| **Embeddings** | text-embedding-3-small | $0.02/1M tokens (5x cheaper than ada-002), 1536D standard |
-| **Vector DB** | pgvector (Postgres) | Zero setup, HNSW index for <1M vectors. Production: Qdrant/Weaviate |
-| **Retrieval** | BM25 + cosine hybrid | BM25 for exact matches, cosine for semantics. Test vs pure vector. |
-| **LLM** | Qwen 2.5 Coder 32B | 65.9% HumanEval, $0.27/1M tokens via Groq API (400 tok/sec) |
-| **UI** | Streamlit | Fast prototyping. Production: VSCode extension or REST API |
+**Input:**
+```python
+def factorial(n):
+    return n * factorial(n)  # Bug: infinite recursion
 
-**Estimated cost:** <$5 for 21-day experiment (500 completions, 50K embeddings)
+# Tests
+assert factorial(5) == 120
+assert factorial(0) == 1
 
----
+Agent Process:
 
-## Week 1 Progress
+Attempt 1: Runs → RecursionError detected
+Attempt 2: Adds base case → Tests pass ✅
+Fixed in 2 iterations (12 seconds)
 
-- [x] **Day 1 (Nov 17):** Architecture design, repo setup
-- [ ] **Day 2 (Nov 18):** AST-based code crawler, chunk extraction
-- [ ] **Day 3 (Nov 19):** Embedding generation, pgvector setup
-- [ ] **Day 4 (Nov 20):** BM25 indexing with `rank_bm25`
-- [ ] **Day 5 (Nov 21):** Hybrid retrieval pipeline
-- [ ] **Day 6 (Nov 22):** Qwen integration via Groq API
-- [ ] **Day 7 (Nov 23):** Prompt engineering, initial completions
+Architecture
 
-_Week 2-3 progress will be added as work proceeds._
+buggy_code + tests 
+  ↓
+LLM (Qwen 2.5 Coder via Groq)
+  ↓
+Docker Sandbox (pytest execution)
+  ↓
+feedback (errors/logs)
+  ↓
+LLM (with feedback history)
+  ↓
+... loop max 5x ...
+  ↓
+fixed_code ✅
 
----
+Tech Stack
+LLM: Qwen 2.5 Coder 32B via Groq API (400 tok/sec, $0.27/1M)
 
-## Relation to Poolside's RLCEF
+Sandbox: Docker + pytest (isolated, timeout-protected)
 
-Poolside uses Reinforcement Learning from Code Execution Feedback: generate code → run tests → update model based on pass/fail.
+Execution Feedback: Real test results + error traces
 
-**This work:** RAG-based context injection (no execution loop, no fine-tuning). Faster to prototype, lower infrastructure needs. Trade-off: No automatic error correction from runtime feedback.
+Future: RAG for codebase context (Week 2)
 
-**Future direction:** Combine RAG retrieval + execution feedback (Week 3 analysis).
+Quick Start
 
----
+# Clone
+git clone https://github.com/mayankiitkgp/poolside-rlcef-agent.git
+cd poolside-rlcef-agent
 
-## Quick Start
-
-Clone repo
-git clone https://github.com/mayankiitkgp/poolside-code-completion
-cd poolside-code-completion
-
-Install dependencies
+# Install
 pip install -r requirements.txt
 
-Configure API keys
+# Configure (add your keys)
 cp .env.example .env
 
-Add OPENAI_API_KEY and GROQ_API_KEY
-Index a codebase (coming Day 2)
-python src/crawler/index_repo.py --repo /path/to/codebase
+# Run agent
+python src/agent/rlcef_loop.py --code examples/buggy_factorial.py --tests examples/test_factorial.py
 
-Run demo (coming Week 2)
+# Or use Streamlit UI
 streamlit run src/ui/app.py
+Roadmap
+ Tonight (Jan 25): Core RLCEF loop + sandbox
+
+ Week 2: Multi-file fixes, codebase RAG retrieval
+
+ Week 3: LoRA fine-tune on HR tech execution traces
+
+ Month 2: VSCode extension
+
+Relation to Poolside
+Poolside trains models with RLCEF at massive scale (millions of repos, GPU clusters).
+
+This project: Replicates their inference-time behavior (execution feedback loop) using hosted APIs – proves the mechanism works without training infrastructure.
 
 
----
 
-## References
-
-1. Poolside: Code Execution Environment
-2. [Qwen 2.5 Coder Report](https://qwenlm.github.io/blog/qwen2.5-coder/)
-3. [HumanEval Benchmark](https://github.com/openai/human-eval)
-
----
-
-## License
-
-MIT License - see [LICENSE](LICENSE).
-
-**Contact:** [LinkedIn](https://www.linkedin.com/in/mayank-mahawar-46032a4b/) or open an issue.
