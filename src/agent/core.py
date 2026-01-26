@@ -22,6 +22,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from groq import Groq
+import google.generativeai as genai
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent.parent
@@ -66,7 +67,7 @@ class RLCEFAgent:
         Initialize the RLCEF Agent.
         
         Args:
-            model: LLM model to use
+            model: LLM model to use (for Groq)
             max_iterations: Maximum fix attempts
             temperature: LLM temperature (higher = more creative)
             loop_threshold: Similarity threshold for loop detection
@@ -74,8 +75,27 @@ class RLCEFAgent:
             enable_validation: Whether to validate syntax before execution
             verbose: Whether to print progress
         """
-        self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        # Primary provider: Groq
+        self.groq_client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
         self.model = model
+        
+        # Fallback provider: Gemini
+        self.gemini_available = False
+        google_api_key = os.environ.get("GOOGLE_API_KEY")
+        if google_api_key:
+            try:
+                genai.configure(api_key=google_api_key)
+                self.gemini_model = genai.GenerativeModel('gemini-2.5-flash-lite')
+                self.gemini_available = True
+            except Exception as e:
+                if verbose:
+                    print(f"⚠️  Gemini fallback not available: {e}")
+        elif verbose:
+            print("⚠️  GOOGLE_API_KEY not set, Gemini fallback disabled")
+        
+        # Provider usage tracking
+        self.provider_stats = {"groq": 0, "gemini": 0}
+        
         self.max_iterations = max_iterations
         self.temperature = temperature
         self.loop_threshold = loop_threshold
@@ -183,7 +203,8 @@ class RLCEFAgent:
             "final_code": final_code,
             "attempts": attempts,
             "buggy_code": buggy_code,
-            "test_code": test_code
+            "test_code": test_code,
+            "provider_stats": self.provider_stats.copy()
         }
         
         # Save trace
@@ -232,19 +253,51 @@ class RLCEFAgent:
         )
     
     def _generate_fix(self, prompt: str) -> str:
-        """Generate a fix using the LLM."""
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=self.temperature,
-            max_tokens=2048
-        )
+        """Generate a fix using the LLM with automatic Gemini fallback."""
         
-        raw_response = response.choices[0].message.content
-        return clean_code_response(raw_response)
+        # Try Groq first (faster, cheaper)
+        try:
+            response = self.groq_client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=self.temperature,
+                max_tokens=2048
+            )
+            
+            self.provider_stats["groq"] += 1
+            raw_response = response.choices[0].message.content
+            return clean_code_response(raw_response)
+            
+        except Exception as e:
+            error_str = str(e).lower()
+            
+            # Check if it's a rate limit error
+            if "429" in str(e) or "rate limit" in error_str or "rate_limit" in error_str or "quota" in error_str or "billing" in error_str:
+                # Always print these warnings to stderr so they show up in logs
+                print(f"  ⚠️  Groq rate limit hit ({e}), switching to Gemini...", file=sys.stderr)
+                
+                # Fallback to Gemini
+                if self.gemini_available:
+                    try:
+                        # Combine system prompt with user prompt for Gemini
+                        full_prompt = f"{SYSTEM_PROMPT}\n\n{prompt}"
+                        response = self.gemini_model.generate_content(full_prompt)
+                        
+                        self.provider_stats["gemini"] += 1
+                        return clean_code_response(response.text)
+                        
+                    except Exception as gemini_error:
+                        print(f"  ❌ Gemini also failed: {gemini_error}", file=sys.stderr)
+                        raise gemini_error
+                else:
+                    print("  ❌ Gemini fallback not available (check GOOGLE_API_KEY in .env)", file=sys.stderr)
+                    raise
+            else:
+                # Other errors, re-raise
+                raise
     
     def _regenerate_with_feedback(
         self, 
@@ -252,7 +305,7 @@ class RLCEFAgent:
         feedback: str,
         temperature: float
     ) -> str:
-        """Regenerate fix with validation feedback."""
+        """Regenerate fix with validation feedback, with Gemini fallback."""
         enhanced_prompt = f"""{original_prompt}
 
 VALIDATION FEEDBACK (fix these issues):
@@ -260,18 +313,41 @@ VALIDATION FEEDBACK (fix these issues):
 
 Generate the corrected code:"""
         
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": enhanced_prompt}
-            ],
-            temperature=temperature,
-            max_tokens=2048
-        )
-        
-        raw_response = response.choices[0].message.content
-        return clean_code_response(raw_response)
+        # Try Groq first
+        try:
+            response = self.groq_client.chat.completions.create(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "user", "content": enhanced_prompt}
+                ],
+                temperature=temperature,
+                max_tokens=2048
+            )
+            
+            self.provider_stats["groq"] += 1
+            raw_response = response.choices[0].message.content
+            return clean_code_response(raw_response)
+            
+        except Exception as e:
+            error_str = str(e).lower()
+            
+            # Check if it's a rate limit error
+            if "429" in str(e) or "rate limit" in error_str or "rate_limit" in error_str or "quota" in error_str or "billing" in error_str:
+                if self.verbose:
+                    print("  ⚠️  Groq rate limit hit, switching to Gemini...")
+                
+                # Fallback to Gemini
+                if self.gemini_available:
+                    full_prompt = f"{SYSTEM_PROMPT}\n\n{enhanced_prompt}"
+                    response = self.gemini_model.generate_content(full_prompt)
+                    
+                    self.provider_stats["gemini"] += 1
+                    return clean_code_response(response.text)
+                else:
+                    raise
+            else:
+                raise
     
     def _validate_fix(
         self,
@@ -336,7 +412,8 @@ Generate the corrected code:"""
             "attempts": result["attempts"],
             "final_code": result["final_code"],
             "success": result["success"],
-            "iterations": result["iterations"]
+            "iterations": result["iterations"],
+            "provider_stats": result.get("provider_stats", {})
         }
         
         with open(trace_path, 'w') as f:

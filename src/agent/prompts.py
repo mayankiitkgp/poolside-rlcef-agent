@@ -71,69 +71,25 @@ Generate the corrected function code:"""
 # REFLECTION PROMPT (After failed attempt)
 # =============================================================================
 
-REFLECTION_PROMPT = """You previously attempted to fix this bug but FAILED.
-
-═══════════════════════════════════════════════════════════════════════════════
-ORIGINAL BUGGY CODE:
-═══════════════════════════════════════════════════════════════════════════════
+REFLECTION_PROMPT = """BUGGY CODE:
 {buggy_code}
 
-═══════════════════════════════════════════════════════════════════════════════
 TESTS THAT MUST PASS:
-═══════════════════════════════════════════════════════════════════════════════
 {test_code}
 
-═══════════════════════════════════════════════════════════════════════════════
-YOUR PREVIOUS FIX ATTEMPT (ITERATION {iteration}):
-═══════════════════════════════════════════════════════════════════════════════
+YOUR PREVIOUS FIX (FAILED):
 {previous_code}
 
-═══════════════════════════════════════════════════════════════════════════════
-TEST RESULT (FAILED):
-═══════════════════════════════════════════════════════════════════════════════
+ERROR FROM TESTS:
 {test_error}
 
-═══════════════════════════════════════════════════════════════════════════════
-CRITICAL REFLECTION - You MUST answer these:
-═══════════════════════════════════════════════════════════════════════════════
+ANALYSIS:
+1. What does each test expect?
+2. What did your previous fix produce?
+3. Why is there a mismatch?
 
-1. EXPECTED: What exact value/behavior does the failing test expect?
-   (Extract from assertion: assert X == Y means expected Y)
+Try a DIFFERENT approach. Generate the corrected code:"""
 
-2. ACTUAL: What did your fix produce instead?
-   (Extract from error: "assert False" or "X != Y" or exception type)
-
-3. ROOT CAUSE: Why is there a mismatch? Be specific:
-   - Wrong algorithm logic?
-   - Missing edge case?
-   - Incorrect condition?
-   - Off-by-one error?
-
-4. CONCRETE FIX: What SPECIFIC code change addresses the root cause?
-   (NOT "try a different approach" - state exactly what to change)
-
-═══════════════════════════════════════════════════════════════════════════════
-ANTI-LOOP CHECK (CRITICAL):
-═══════════════════════════════════════════════════════════════════════════════
-
-Your previous fixes:
-{previous_attempts_summary}
-
-WARNING: If your new fix looks similar to a previous attempt, you're in a LOOP.
-To break out, try a FUNDAMENTALLY different strategy:
-  • Different algorithm (recursion ↔ iteration, loop ↔ comprehension)
-  • Different edge case handling (if/else ↔ try/except ↔ early return)
-  • Different data structure (variables ↔ dict ↔ class)
-  • Completely different logic path
-
-═══════════════════════════════════════════════════════════════════════════════
-
-Now generate a NEW fix that:
-1. Addresses the root cause identified above
-2. Is DIFFERENT from previous attempts
-3. Handles ALL test cases including edge cases
-
-Output ONLY the corrected function code:"""
 
 # =============================================================================
 # VALIDATION PROMPT (Pre-submission check)
